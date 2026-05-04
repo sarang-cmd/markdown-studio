@@ -2,15 +2,31 @@
   "name": "markdown-studio",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:wasm:markdown": "cd wasm_modules/markdown_parser && wasm-pack build --target web --out-dir ../../src/lib/wasm/pkg/markdown_parser",
+    "build:wasm:color": "cd wasm_modules/color_extractor && wasm-pack build --target web --out-dir ../../src/lib/wasm/pkg/color_extractor",
+    "build:wasm:pdf": "cd wasm_modules/pdf_generator && wasm-pack build --target web --out-dir ../../src/lib/wasm/pkg/pdf_generator",
+    "build:wasm": "npm run build:wasm:markdown && npm run build:wasm:color && npm run build:wasm:pdf"
+  },
+  "dependencies": {
+    "@codemirror/lang-markdown": "^6.3.4",
+    "@codemirror/view": "^6.36.6",
+    "codemirror": "^6.0.1",
+    "docx": "^9.5.1",
+    "idb": "^8.0.3",
+    "jspdf": "^3.0.2",
+    "jszip": "^3.10.1"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
-    "svelte": "^4.0.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/node": "^22.15.3",
     "@sveltejs/vite-plugin-svelte": "^2.0.0",
-    "typescript": "^5.0.0"
+    "svelte": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
   }
 }

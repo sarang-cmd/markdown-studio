@@ -1,0 +1,7 @@
+[workspace]
+members = [
+  "markdown_parser",
+  "color_extractor",
+  "pdf_generator"
+]
+resolver = "2"
