@@ -1,31 +1,23 @@
 <script lang="ts">
+  import { onDestroy, onMount } from 'svelte';
   import { documentStore } from '$lib/stores/document';
-  import { onMount } from 'svelte';
+  import { themeStore } from '$lib/stores/theme';
+  import { loadMarkdownParser } from '$lib/wasm/markdown_parser';
 
-  let rendered = '';
-  let parser: any = null;
+  let rendered = '<p>Loading preview...</p>';
+  let parser: { parse_markdown: (input: string) => string } | null = null;
+  let unsubscribe: (() => void) | undefined;
 
   onMount(async () => {
-    try {
-      // attempt to load wasm parser glue (if built)
-      const mod = await import('$lib/wasm/markdown_parser.js');
-      if (mod && mod.init) {
-        await mod.init();
-        parser = mod;
-      }
-    } catch (err) {
-      // wasm not built yet; fall back to lightweight conversion
-      parser = null;
-    }
+    parser = await loadMarkdownParser();
 
-    documentStore.subscribe(doc => {
+    unsubscribe = documentStore.subscribe((doc) => {
       if (parser && parser.parse_markdown) {
         rendered = parser.parse_markdown(doc.content);
       } else {
-        // naive fallback: convert headings and paragraphs
         const html = doc.content
           .split('\n\n')
-          .map(block => {
+          .map((block) => {
             if (block.startsWith('# ')) return `<h1>${block.replace('# ', '')}</h1>`;
             if (block.startsWith('## ')) return `<h2>${block.replace('## ', '')}</h2>`;
             return `<p>${block.replace(/\n/g, '<br/>')}</p>`;
@@ -33,14 +25,45 @@
           .join('');
         rendered = html;
       }
+
+      documentStore.updateRenderedHTML(rendered);
     });
+  });
+
+  onDestroy(() => {
+    unsubscribe?.();
   });
 </script>
 
 <style>
-  .preview { padding: 1rem; }
+  .preview {
+    height: 100%;
+    overflow: auto;
+    padding: 1.2rem;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Atkinson Hyperlegible', 'Segoe UI', sans-serif;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  .preview :global(h1, h2, h3, h4, h5, h6) {
+    color: var(--heading);
+  }
+
+  .preview :global(a) {
+    color: var(--link);
+  }
+
+  .preview :global(pre),
+  .preview :global(code) {
+    background: var(--code-bg);
+    color: var(--code-text);
+  }
 </style>
 
-<div class="preview">
+<div
+  class="preview"
+  style="--bg: {$themeStore.backgroundColor}; --text: {$themeStore.textColor}; --heading: {$themeStore.headingColor}; --link: {$themeStore.linkColor}; --code-bg: {$themeStore.codeBackground}; --code-text: {$themeStore.codeText};"
+>
   {@html rendered}
 </div>
