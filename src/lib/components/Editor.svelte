@@ -1,21 +1,55 @@
 <script lang="ts">
+  import { basicSetup } from 'codemirror';
+  import { markdown } from '@codemirror/lang-markdown';
+  import { EditorView } from '@codemirror/view';
+  import { onDestroy, onMount } from 'svelte';
   import { documentStore } from '$lib/stores/document';
-  import { get } from 'svelte/store';
+  import { debounce } from '$lib/utils/helpers';
 
-  let content = '';
-  const unsubscribe = documentStore.subscribe(doc => content = doc.content);
+  let editorHost: HTMLDivElement;
+  let editorView: EditorView | undefined;
+  let initialContent = '';
+  const unsubscribe = documentStore.subscribe((doc) => {
+    initialContent = doc.content;
+  });
 
-  function onInput(e: Event) {
-    const v = (e.target as HTMLTextAreaElement).value;
-    documentStore.updateContent(v);
-  }
+  const pushChange = debounce((value: string) => {
+    documentStore.updateContent(value);
+  }, 100);
 
-  // cleanup
-  // onDestroy would be ideal, but keep this minimal for scaffold
+  onMount(() => {
+    editorView = new EditorView({
+      parent: editorHost,
+      doc: initialContent,
+      extensions: [
+        basicSetup,
+        markdown(),
+        EditorView.lineWrapping,
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            pushChange(update.state.doc.toString());
+          }
+        })
+      ]
+    });
+  });
+
+  onDestroy(() => {
+    unsubscribe();
+    editorView?.destroy();
+  });
 </script>
 
 <style>
-  textarea { width: 100%; height: 100%; padding: 1rem; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 14px; }
+  .editor {
+    height: 100%;
+  }
+
+  .editor :global(.cm-editor) {
+    height: 100%;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 14px;
+  }
 </style>
 
-<textarea on:input={onInput} bind:value={content} />
+<div class="editor" bind:this={editorHost}></div>
