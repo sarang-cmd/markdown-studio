@@ -46,7 +46,12 @@
     transition: background-color 160ms ease, color 160ms ease;
   }
 
-  .preview :global(h1, h2, h3, h4, h5, h6) {
+  .preview :global(h1),
+  .preview :global(h2),
+  .preview :global(h3),
+  .preview :global(h4),
+  .preview :global(h5),
+  .preview :global(h6) {
     color: var(--heading);
   }
 

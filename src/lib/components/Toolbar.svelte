@@ -2,11 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { settingsStore } from '$lib/stores/settings';
 
-  const dispatch = createEventDispatcher<{
-    openExport: void;
-    togglePalette: void;
-    toggleTheme: void;
-  }>();
+  const dispatch = createEventDispatcher();
 </script>
 
 <header class="toolbar">

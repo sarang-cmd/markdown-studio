@@ -22,6 +22,11 @@
     codeText: 'Code Text',
     accentColor: 'Accent'
   };
+
+  function updateThemeColor(key: (typeof editableKeys)[number], event: Event) {
+    const target = event.currentTarget as HTMLInputElement;
+    themeStore.updateColor(key, target.value);
+  }
 </script>
 
 {#if open}
@@ -40,7 +45,7 @@
           <input
             type="color"
             value={$themeStore[key]}
-            on:input={(event) => themeStore.updateColor(key, (event.currentTarget as HTMLInputElement).value)}
+            on:input={(event) => updateThemeColor(key, event)}
           />
         </label>
       {/each}

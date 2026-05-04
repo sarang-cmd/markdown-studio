@@ -1,0 +1,10 @@
+{
+  "name": "Light",
+  "backgroundColor": "#FFFFFF",
+  "textColor": "#253044",
+  "headingColor": "#0B1220",
+  "linkColor": "#165DFF",
+  "codeBackground": "#EEF2FF",
+  "codeText": "#172554",
+  "accentColor": "#FF6B00"
+}
