@@ -1,11 +1,6 @@
 <script lang="ts">
-  import JSZip from 'jszip';
   import { documentStore } from '$lib/stores/document';
   import { themeStore } from '$lib/stores/theme';
-  import { exportToHTML } from '$lib/utils/exporters/html';
-  import { exportToPDF } from '$lib/utils/exporters/pdf';
-  import { exportToDOCX } from '$lib/utils/exporters/docx';
-  import { exportToMarkdown } from '$lib/utils/exporters/markdown';
 
   export let open = false;
   export let onClose: () => void;
@@ -33,6 +28,7 @@
       const files: { blob: Blob; name: string }[] = [];
 
       if (selectedFormats.pdf) {
+        const { exportToPDF } = await import('$lib/utils/exporters/pdf');
         files.push({
           blob: await exportToPDF(doc.renderedHTML || doc.content, metadata),
           name: 'document.pdf'
@@ -40,20 +36,24 @@
       }
 
       if (selectedFormats.docx) {
+        const { exportToDOCX } = await import('$lib/utils/exporters/docx');
         files.push({ blob: await exportToDOCX(doc.content), name: 'document.docx' });
       }
 
       if (selectedFormats.html) {
+        const { exportToHTML } = await import('$lib/utils/exporters/html');
         files.push({ blob: exportToHTML(doc.renderedHTML || doc.content, theme), name: 'document.html' });
       }
 
       if (selectedFormats.markdown) {
+        const { exportToMarkdown } = await import('$lib/utils/exporters/markdown');
         files.push({ blob: exportToMarkdown(doc.content), name: 'document.md' });
       }
 
       if (files.length === 1) {
         downloadBlob(files[0].blob, files[0].name);
       } else if (files.length > 1) {
+        const { default: JSZip } = await import('jszip');
         const zip = new JSZip();
         files.forEach((file) => zip.file(file.name, file.blob));
         const zipBlob = await zip.generateAsync({ type: 'blob' });

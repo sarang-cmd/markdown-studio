@@ -8,4 +8,3 @@ src/lib/wasm/pkg/
 # Editor and OS noise
 .DS_Store
 *.log
-wasm_modules/
