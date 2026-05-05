@@ -4,8 +4,8 @@
   import Preview from '$lib/components/Preview.svelte';
   import ColorPalette from '$lib/components/ColorPalette.svelte';
   import ThemeBuilder from '$lib/components/ThemeBuilder.svelte';
+  import WritingStats from '$lib/components/WritingStats.svelte';
   import ExportDialog from '$lib/components/ExportDialog.svelte';
-  import { documentStore } from '$lib/stores/document';
   import { settingsStore } from '$lib/stores/settings';
 
   let showPalette = true;
@@ -85,10 +85,7 @@
   </div>
 
   <footer class="status">
-    <span>{$documentStore.wordCount} words</span>
-    <span>{$documentStore.charCount} chars</span>
-    <span>Auto-saved</span>
-    <span>Updated: {new Date($documentStore.lastModified).toLocaleTimeString()}</span>
+    <WritingStats />
   </footer>
 
   <ExportDialog open={showExport} onClose={() => (showExport = false)} />
