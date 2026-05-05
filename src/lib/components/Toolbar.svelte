@@ -11,8 +11,10 @@
     <h1>Markdown Studio</h1>
   </div>
   <div class="actions">
+    <button on:click={() => dispatch('importDocument')}>Import</button>
     <button on:click={() => dispatch('togglePalette')}>Palette</button>
     <button on:click={() => dispatch('toggleTheme')}>Theme</button>
+    <button on:click={() => settingsStore.toggleLineNumbers()}>Lines</button>
     <button on:click={() => settingsStore.toggleFocusMode()}>Focus</button>
     <button class="primary" on:click={() => dispatch('openExport')}>Export</button>
   </div>
